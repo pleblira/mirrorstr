@@ -7,6 +7,8 @@ import json
 import datetime
 from post_note import *
 from nostr.key import PrivateKey
+from upload_to_voidcat_and_return_url import *
+import requests
    
 TWITTER_HANDLE = "jusabitcoiner"
 NOSTR_PRIVATE_KEY = ""
@@ -16,7 +18,7 @@ NOSTR_PRIVATE_KEY = ""
 # print(repr(result.stdout))
 
 def scrape_and_post():
-    print('running run_snscrape')
+    print('running scrape_and_post')
     scrape = subprocess.run(['snscrape','--jsonl','-n','5','twitter-user', TWITTER_HANDLE], capture_output=True, text=True)
     json_from_scraper_output = json.loads("["+scrape.stdout.strip().replace("\n",",")+"]")
     # print(json_from_scraper_output)
@@ -35,14 +37,44 @@ def scrape_and_post():
                         print("new tweet found")
                         if scraped_tweet["media"] != None:
                             print("has image")
-                            for image in scraped_tweet["media"]:
-                                scraped_tweet["rawContent"] = scraped_tweet["rawContent"]+" "+image["fullUrl"]
+                            for media_file in scraped_tweet["media"]:
+                                if media_file["_type"] == "snscrape.modules.twitter.Photo":
+                                    filetype = media_file["fullUrl"]
+                                    filetype = filetype[filetype.find("?format=")+8:]
+                                    filetype = filetype[:filetype.find("&")]
+
+                                    downloaded_media = requests.get(media_file["fullUrl"])
+
+                                elif media_file["_type"] == "snscrape.modules.twitter.Gif":
+                                    filetype = media_file["variants"][0]["url"]
+                                    filetype = filetype[filetype.rfind(".")+1:]
+
+                                    downloaded_media = requests.get(media_file["variants"][0]["url"])
+
+                                elif media_file["_type"] == "snscrape.modules.twitter.Video":
+                                    temporary_variant_list = media_file["variants"]
+                                    for index, variant in enumerate(temporary_variant_list):
+                                        if variant["bitrate"] == None:
+                                            temporary_variant_list.pop(index)
+                                    temporary_variant_list = sorted(temporary_variant_list, key=lambda d: d['bitrate'], reverse=True)
+
+                                    filetype = temporary_variant_list[0]["url"]
+                                    filetype = filetype[:filetype.find("?tag=")]
+                                    filetype = filetype[filetype.rfind(".")+1:]
+
+                                    downloaded_media = requests.get(temporary_variant_list[0]["url"])
+                                
+                                with open("temp."+filetype,'wb') as temp_media_file:
+                                    temp_media_file.write(downloaded_media.content)
+
+                                scraped_tweet["rawContent"] = scraped_tweet["rawContent"]+" "+upload_to_voidcat_and_return_url("temp."+filetype, filetype)
+
                         stored_json.append(scraped_tweet)
                         f.seek(0)
                         f.write(json.dumps(stored_json, indent=2))
                         post_note(NOSTR_PRIVATE_KEY, scraped_tweet["rawContent"])
                         new_tweet = False
-                print('exited while loop')
+                # print('exited while loop')
             else:
                 print('tweet is a reply')
 
@@ -79,5 +111,5 @@ while True:
 #     relay_manager = main(public_key.hex(), since=last_queried_event_datetime)
 #     print('resuming')
 
-    print('\nhello world')
-    time.sleep(7)
+    print('\nkeeping process alive')
+    time.sleep(30)
