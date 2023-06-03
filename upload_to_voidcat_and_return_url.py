@@ -15,6 +15,4 @@ def upload_to_voidcat_and_return_url(media_file, filetype):
     with open(media_file, 'rb') as file:
         response = requests.post("https://void.cat/upload?cli=true", headers=headers, data=file)
 
-    print(f"voidcat url is {response.text}")
-
     return response.text+"."+filetype

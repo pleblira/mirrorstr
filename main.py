@@ -9,6 +9,7 @@ from post_note import *
 from nostr.key import PrivateKey
 from upload_to_voidcat_and_return_url import *
 import requests
+from mp4_to_gif import *
    
 TWITTER_HANDLE = "jusabitcoiner"
 NOSTR_PRIVATE_KEY = ""
@@ -35,6 +36,15 @@ def scrape_and_post():
                             new_tweet = False
                     if new_tweet == True:
                         print("new tweet found")
+                        # removing //t.co addresses at end of tweet message
+                        tweet_message = scraped_tweet["rawContent"]
+                        if tweet_message[len(tweet_message)-23:len(tweet_message)-20] == "htt":
+                            tweet_message_list = [tweet_message]
+                            while tweet_message_list[len(tweet_message_list)-1][len(tweet_message_list[len(tweet_message_list)-1])-23:len(tweet_message_list[len(tweet_message_list)-1])-20] == "htt":
+                                tweet_message_list.append(tweet_message_list[len(tweet_message_list)+-1][:len(tweet_message_list[len(tweet_message_list)-1])-23].rstrip())
+                            tweet_message = tweet_message_list[len(tweet_message_list)-1]
+                        scraped_tweet["rawContent"] = tweet_message
+
                         if scraped_tweet["media"] != None:
                             print("has image")
                             for media_file in scraped_tweet["media"]:
@@ -51,6 +61,7 @@ def scrape_and_post():
 
                                     downloaded_media = requests.get(media_file["variants"][0]["url"])
 
+
                                 elif media_file["_type"] == "snscrape.modules.twitter.Video":
                                     temporary_variant_list = media_file["variants"]
                                     for index, variant in enumerate(temporary_variant_list):
@@ -66,6 +77,10 @@ def scrape_and_post():
                                 
                                 with open("temp."+filetype,'wb') as temp_media_file:
                                     temp_media_file.write(downloaded_media.content)
+
+                                if media_file["_type"] == "snscrape.modules.twitter.Gif":
+                                    mp4_to_gif("temp.mp4", "temp.gif", 100, 10)
+                                    filetype = "gif"
 
                                 scraped_tweet["rawContent"] = scraped_tweet["rawContent"]+" "+upload_to_voidcat_and_return_url("temp."+filetype, filetype)
 
@@ -93,7 +108,7 @@ if __name__ == "__main__":
         f.write(json.dumps(json_from_output, indent=2))
     
     scheduler = BackgroundScheduler()
-    scheduler.add_job(scrape_and_post, 'interval', seconds=6)
+    scheduler.add_job(scrape_and_post, 'interval', seconds=10)
     print('\nstarting scheduler')
     scheduler.start()
 
