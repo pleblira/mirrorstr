@@ -61,7 +61,6 @@ def scrape_and_post():
 
                                     downloaded_media = requests.get(media_file["variants"][0]["url"])
 
-
                                 elif media_file["_type"] == "snscrape.modules.twitter.Video":
                                     temporary_variant_list = media_file["variants"]
                                     for index, variant in enumerate(temporary_variant_list):
@@ -79,7 +78,9 @@ def scrape_and_post():
                                     temp_media_file.write(downloaded_media.content)
 
                                 if media_file["_type"] == "snscrape.modules.twitter.Gif":
-                                    mp4_to_gif("temp.mp4", "temp.gif", 100, 10)
+                                    with open("gifcopy."+filetype,'wb') as temp_media_file:
+                                        temp_media_file.write(downloaded_media.content)
+                                    mp4_to_gif("temp.mp4", "temp.gif")
                                     filetype = "gif"
 
                                 scraped_tweet["rawContent"] = scraped_tweet["rawContent"]+" "+upload_to_voidcat_and_return_url("temp."+filetype, filetype)

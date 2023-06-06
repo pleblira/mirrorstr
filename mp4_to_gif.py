@@ -1,20 +1,19 @@
 from moviepy.editor import VideoFileClip
+from PIL import Image, ImageSequence
+import numpy as np
 
-def resize_clip(clip, percentage):
-    width = int(clip.size[0] * percentage / 100)
-    clip_resized = clip.resize(width=width)
-    return clip_resized
-
-def mp4_to_gif(input_file, output_file, resize_percentage, frame_rate):
+def mp4_to_gif(input_file, output_file):
     clip = VideoFileClip(input_file)
-    clip_resized = resize_clip(clip, resize_percentage)
-    clip_resized.write_gif(output_file, fps=frame_rate)
-    clip.close()
 
-# Example usage
-# input_file = "input.mp4"
-# output_file = "output.gif"
-# resize_percentage = 50  # Set the desired resize percentage (e.g., 50 for 50%)
-# frame_rate = 4  # Set the desired frame rate
+    frame_duration = 1 / clip.fps
 
-# mp4_to_gif(input_file, output_file, resize_percentage, frame_rate)
+    duration = clip.duration
+    num_frames = int(duration / frame_duration)
+    frames = [clip.get_frame(t) for t in np.linspace(0, duration, num=num_frames)]
+
+    # Save frames as GIF using PIL
+    frames_pil = [Image.fromarray(frame) for frame in frames]
+    frames_pil[0].save(output_file, save_all=True, append_images=frames_pil[1:], optimize=False, duration=frame_duration * 1000, loop=0)
+
+# if __name__ == "__main__":
+#     mp4_to_gif("2.mp4","gifcopy2.gif")
