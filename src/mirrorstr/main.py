@@ -74,7 +74,7 @@ def scrape_and_post():
 
                                     downloaded_media = requests.get(temporary_variant_list[0]["url"])
                                 
-                                with open("temp."+filetype,'wb') as temp_media_file:
+                                with open("temp."+filetype,'wb') as te  mp_media_file:
                                     temp_media_file.write(downloaded_media.content)
 
                                 if media_file["_type"] == "snscrape.modules.twitter.Gif":

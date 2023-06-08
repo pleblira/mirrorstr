@@ -16,6 +16,16 @@ Libraries:
 https://github.com/jeffthibault/python-nostr (and its dependencies)
 https://github.com/JustAnotherArchivist/snscrape (and its dependencies)
 
+## Dependency
+This project depends on the dev version of snscrape, which is not available on PyPI. One place where you can find it is at: https://github.com/JustAnotherArchivist/snscrape.
+
+You can install it by running the following command:
+
+'''
+pip3 install git+https://github.com/JustAnotherArchivist/snscrape.git
+'''
+
+
 # TODO & Timeline
 
 The first functionality to develop will be Twitter => Nostr. It will take less time to develop and I think has higher demand at the moment.
