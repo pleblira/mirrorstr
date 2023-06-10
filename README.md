@@ -19,12 +19,13 @@ https://github.com/JustAnotherArchivist/snscrape (and its dependencies)
 ## Dependency
 This project depends on the dev version of snscrape, which is not available on PyPI. One place where you can find it is at: https://github.com/JustAnotherArchivist/snscrape.
 
-You can install it by running the following command:
+You can install it by running the following commands:
 
-'''
-pip3 install git+https://github.com/JustAnotherArchivist/snscrape.git
-'''
+```
+pip install ../mirrorstr && pip3 install git+https://github.com/JustAnotherArchivist/snscrape.git
+```
 
+Not compatible with arm macs
 
 # TODO & Timeline
 

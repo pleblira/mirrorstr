@@ -5,28 +5,27 @@ import subprocess
 import sys
 import json
 import datetime
-from post_note import *
+from mirrorstr.post_note import *
 from nostr.key import PrivateKey
-from upload_to_voidcat_and_return_url import *
+from mirrorstr.upload_to_voidcat_and_return_url import *
 import requests
-from mp4_to_gif import *
+from mirrorstr.mp4_to_gif import *
    
-TWITTER_HANDLE = "jusabitcoiner"
+TWITTER_HANDLE = ""
 NOSTR_PRIVATE_KEY = ""
 
 # print(type(result.stdout))
 # repr shows escape characters - searching for \n
 # print(repr(result.stdout))
 
-def scrape_and_post():
-    print('running scrape_and_post')
+def scrape_and_post(TWITTER_HANDLE, NOSTR_PRIVATE_KEY):
+    print('running scrape_and_post. Analyzing last 5 scraped tweets')
     scrape = subprocess.run(['snscrape','--jsonl','-n','5','twitter-user', TWITTER_HANDLE], capture_output=True, text=True)
     json_from_scraper_output = json.loads("["+scrape.stdout.strip().replace("\n",",")+"]")
     # print(json_from_scraper_output)
     with open('tweets.json','r+') as f:
         stored_json = json.load(f)
         for scraped_tweet in json_from_scraper_output:
-            print("")
             if scraped_tweet["inReplyToTweetId"] == None:
                 new_tweet = True
                 while new_tweet == True:
@@ -74,7 +73,7 @@ def scrape_and_post():
 
                                     downloaded_media = requests.get(temporary_variant_list[0]["url"])
                                 
-                                with open("temp."+filetype,'wb') as te  mp_media_file:
+                                with open("temp."+filetype,'wb') as temp_media_file:
                                     temp_media_file.write(downloaded_media.content)
 
                                 if media_file["_type"] == "snscrape.modules.twitter.Gif":
@@ -94,9 +93,13 @@ def scrape_and_post():
             else:
                 print('tweet is a reply')
 
-if __name__ == "__main__":
-    # NOSTR_PRIVATE_KEY = input("Please type your Nostr private key: ")
-    NOSTR_PRIVATE_KEY = PrivateKey.from_nsec("nsec16pejvh2hdkf4rzrpejk93tmvuhaf8pv7eqenevk576492zqy6pfqguu985")
+def mirrorstr():
+    NOSTR_PRIVATE_KEY = input("Type Nostr nsec private key (enter 'test' to use test key nsec16pejvh2hdkf4rzrpejk93tmvuhaf8pv7eqenevk576492zqy6pfqguu985): ")
+
+    TWITTER_HANDLE = input("Type Twitter handle: ")
+
+    if NOSTR_PRIVATE_KEY == "test":
+        NOSTR_PRIVATE_KEY = PrivateKey.from_nsec("nsec16pejvh2hdkf4rzrpejk93tmvuhaf8pv7eqenevk576492zqy6pfqguu985")
 
     with open('tweets.json','w') as f:
         f.write("[]")
@@ -109,11 +112,11 @@ if __name__ == "__main__":
         f.write(json.dumps(json_from_output, indent=2))
     
     scheduler = BackgroundScheduler()
-    scheduler.add_job(scrape_and_post, 'interval', seconds=10)
+    scheduler.add_job(scrape_and_post, 'interval', seconds=10, args=[TWITTER_HANDLE,NOSTR_PRIVATE_KEY])
     print('\nstarting scheduler')
     scheduler.start()
 
-while True:
+    while True:
 #     with open('tweets.json', 'r') as f:
 #         tweets = json.load(f)
 #         last_queried_event_datetime = int(datetime.fromisoformat(tweets[len(tweets)-1]['date']).timestamp())
@@ -126,6 +129,6 @@ while True:
 #     print('restarting connection on relay manager')
 #     relay_manager = main(public_key.hex(), since=last_queried_event_datetime)
 #     print('resuming')
+        print('\nkeeping process alive')
+        time.sleep(30)
 
-    print('\nkeeping process alive')
-    time.sleep(30)

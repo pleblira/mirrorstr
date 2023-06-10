@@ -10,7 +10,8 @@ from nostr.event import Event
 # from nostr.event import Event
 # from nostr.relay_manager import RelayManager
 # from nostr.key import PrivateKey
-import random
+# import random
+import os
 
 # private_key = PrivateKey()
 # print(private_key.bech32())
@@ -20,9 +21,13 @@ import random
 
 tags = []
 
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+
 def post_note(private_key, content, tags=""):
     relay_manager = RelayManager()
-    with open('relay_list.txt', 'r') as f:
+    with open(__location__+'/relay_list.txt', 'r') as f:
         for line in f:
             relay_manager.add_relay(line.strip())
     # relay_manager.add_relay("wss://relay.nostr.bg")
