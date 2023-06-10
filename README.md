@@ -37,6 +37,7 @@ On the other hand, I believe that the Nostr => Twitter functionality is the end-
 [x] Twitter scraper - using the excellent tool by JustAnotherArchivist, snscrape (https://github.com/JustAnotherArchivist/snscrape)<br>
 [x] Parse twitter content after scraping<br>
 [x] Nostr posting
+[ ] Detect and import full threads
 
 ### 2 - Mirrorstr config file for Twitter => Nostr
 [ ] Select relays to post to<br>
