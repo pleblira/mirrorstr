@@ -16,16 +16,16 @@ Libraries:
 https://github.com/jeffthibault/python-nostr (and its dependencies)
 https://github.com/JustAnotherArchivist/snscrape (and its dependencies)
 
-## Dependency
-This project depends on the dev version of snscrape, which is not available on PyPI. One place where you can find it is at: https://github.com/JustAnotherArchivist/snscrape.
+## Dev version of snscrape
+This project depends on the dev version of snscrape, an excellent twitter scraping library. The dev version is available on PyPI, and an additional command is needed to install it.
 
-You can install it by running the following commands:
+# Install Mirrorstr
 
 ```
 pip install ../mirrorstr && pip3 install git+https://github.com/JustAnotherArchivist/snscrape.git
 ```
 
-Not compatible with arm macs
+* Not compatible with arm macs
 
 # TODO & Timeline
 
@@ -35,7 +35,7 @@ On the other hand, I believe that the Nostr => Twitter functionality is the end-
 
 ### 1 - Twitter => Nostr functionality
 [x] Twitter scraper - using the excellent tool by JustAnotherArchivist, snscrape (https://github.com/JustAnotherArchivist/snscrape)<br>
-[ ] Parse twitter content after scraping<br>
+[x] Parse twitter content after scraping<br>
 [x] Nostr posting
 
 ### 2 - Mirrorstr config file for Twitter => Nostr
