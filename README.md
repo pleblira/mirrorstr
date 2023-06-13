@@ -22,7 +22,7 @@ This project depends on the dev version of snscrape, an excellent twitter scrapi
 # Install Mirrorstr
 
 ```
-pip install ../mirrorstr && pip3 install git+https://github.com/JustAnotherArchivist/snscrape.git
+pip install mirrorstr && pip3 install git+https://github.com/JustAnotherArchivist/snscrape.git
 ```
 
 * Not compatible with arm macs
