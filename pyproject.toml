@@ -30,7 +30,7 @@ dependencies = [
 "Bug Tracker" = "https://github.com/pleblira/mirrorstr/issues"
 
 [project.scripts]
-mirrorstr = "mirrorstr.mirrorstr:mirrorstr"
+siggy_scrape = "siggy_scrape.siggy_scrape:siggy_scrape"
 
 [tool.setuptools.package-data]
 myModule = ["*.txt"]
