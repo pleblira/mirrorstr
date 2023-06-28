@@ -1,4 +1,4 @@
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
 import time
 import random
 import subprocess
@@ -95,11 +95,12 @@ def scrape_and_post(TWITTER_HANDLE, NOSTR_PRIVATE_KEY):
 
 def mirrorstr():
     NOSTR_PRIVATE_KEY = input("Type Nostr nsec private key (enter 'test' to use test key nsec16pejvh2hdkf4rzrpejk93tmvuhaf8pv7eqenevk576492zqy6pfqguu985): ")
-
     TWITTER_HANDLE = input("Type Twitter handle: ")
 
     if NOSTR_PRIVATE_KEY == "test":
         NOSTR_PRIVATE_KEY = PrivateKey.from_nsec("nsec16pejvh2hdkf4rzrpejk93tmvuhaf8pv7eqenevk576492zqy6pfqguu985")
+    else:
+        NOSTR_PRIVATE_KEY = PrivateKey.from_nsec(NOSTR_PRIVATE_KEY.strip())
 
     with open('tweets.json','w') as f:
         f.write("[]")
@@ -111,24 +112,7 @@ def mirrorstr():
         f.seek(0)
         f.write(json.dumps(json_from_output, indent=2))
     
-    scheduler = BackgroundScheduler()
+    scheduler = BlockingScheduler()
     scheduler.add_job(scrape_and_post, 'interval', seconds=10, args=[TWITTER_HANDLE,NOSTR_PRIVATE_KEY])
     print('\nstarting scheduler')
     scheduler.start()
-
-    while True:
-#     with open('tweets.json', 'r') as f:
-#         tweets = json.load(f)
-#         last_queried_event_datetime = int(datetime.fromisoformat(tweets[len(tweets)-1]['date']).timestamp())
-#     # print(f"last queried event datetime {last_queried_event_datetime}")
-#     # quit()
-#     time.sleep(600)
-#     print('closing connections to relays')
-#     close_connections(relay_manager)
-#     time.sleep(5)
-#     print('restarting connection on relay manager')
-#     relay_manager = main(public_key.hex(), since=last_queried_event_datetime)
-#     print('resuming')
-        print('\nkeeping process alive')
-        time.sleep(30)
-
